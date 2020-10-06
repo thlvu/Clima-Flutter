@@ -64,6 +64,10 @@
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/Podfile
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/Flutter.podspec
+**/ios/Podfile.lock
+
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
