@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'location_screen.dart';
+import 'package:clima/services/location.dart';
+import 'package:clima/services/networking.dart';
+import 'package:clima/utilities/constants.dart';
+import 'dart:io';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -7,34 +12,46 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  void getLocation() async {
-    LocationPermission locationPermission = await checkPermission();
-    switch (locationPermission) {
-      case LocationPermission.denied:
-      case LocationPermission.deniedForever:
-        {
-          locationPermission = await requestPermission();
-          break;
-        }
-      case LocationPermission.always:
-      case LocationPermission.whileInUse:
-      default:
-        break;
-    }
+  Future<void> getLocationData() async {
+    Location location = Location();
+    await location.getCurrentLocation();
 
-    Position position =
-        await getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-    print(position);
+    Map data =
+        await NetworkHelper('https://api.openweathermap.org/data/2.5/weather'
+                '?lat=${location.latitude}'
+                '&lon=${location.longitude}'
+                '&appid=$kApiKey')
+            .getData();
+
+    print(data);
+
+    Duration duration = Duration(seconds: 3);
+    sleep(duration);
+
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return LocationScreen();
+        },
+      ),
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    getLocation();
+    getLocationData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: SpinKitDoubleBounce(color: Colors.blue, duration: Duration(microseconds: 200),),
+        ),
+      ),
+    );
   }
 }
