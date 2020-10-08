@@ -3,7 +3,18 @@ import 'package:clima/services/networking.dart';
 import 'package:clima/utilities/constants.dart';
 
 class WeatherModel {
-  Future<Map> getWeatherData() async {
+  Future<Map> getCityWeather(String cityName) async {
+    Map data = await NetworkHelper(
+      '$kWeatherRequestURL'
+      '?q=$cityName'
+      '&appid=$kApiKey'
+      '&units=metric',
+    ).getData();
+
+    return data;
+  }
+
+  Future<Map> getLocationWeather() async {
     Location location = Location();
     await location.getCurrentLocation();
 
@@ -14,8 +25,6 @@ class WeatherModel {
       '&appid=$kApiKey'
       '&units=metric',
     ).getData();
-
-    print(data);
 
     return data;
   }
