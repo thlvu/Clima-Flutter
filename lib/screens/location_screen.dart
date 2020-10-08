@@ -20,17 +20,27 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
     super.initState();
-    updateUI();
+    updateUI(widget.weatherData);
   }
 
-  void updateUI() {
-    int condition = widget.weatherData['weather'][0]['id'];
-    weatherIcon = WeatherModel().getWeatherIcon(condition);
+  void updateUI(Map weatherData) {
+    setState(() {
+      if (weatherData == null) {
+        weatherIcon = 'ERROR';
+        temperature = 0;
+        weatherMessage = 'ERR';
+        cityName = '';
+        return;
+      }
 
-    temperature = widget.weatherData['main']['temp'].round();
-    weatherMessage = WeatherModel().getMessage(temperature);
+      int condition = weatherData['weather'][0]['id'];
+      weatherIcon = WeatherModel().getWeatherIcon(condition);
 
-    cityName = widget.weatherData['name'];
+      temperature = weatherData['main']['temp'].round();
+      weatherMessage = WeatherModel().getMessage(temperature);
+
+      cityName = weatherData['name'];
+    });
   }
 
   @override
@@ -55,7 +65,10 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      Map weatherData = await WeatherModel().getWeatherData();
+                      updateUI(weatherData);
+                    },
                     child: Icon(
                       Icons.near_me,
                       size: 50.0,
